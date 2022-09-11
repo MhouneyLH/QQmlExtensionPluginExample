@@ -2,6 +2,9 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ClockBackground.qml</file>
-        <file>SmallClockHand.qml</file>
+        <file>HourClockHand.qml</file>
+        <file>GenericClockHand.qml</file>
+        <file>MinuteClockHand.qml</file>
+        <file>SecondClockHand.qml</file>
     </qresource>
 </RCC>

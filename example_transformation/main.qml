@@ -11,8 +11,8 @@ Window {
     {
         anchors.centerIn: parent
 
-        SmallClockHand
-        {
-        }
+        HourClockHand {}
+        MinuteClockHand {}
+        SecondClockHand {}
     }
 }
