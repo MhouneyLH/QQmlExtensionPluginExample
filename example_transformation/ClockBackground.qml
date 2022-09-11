@@ -4,9 +4,9 @@ Rectangle
 {
     id: clockBackground
     width: size
-    height: size
+    height: width
     radius: width / 4
-    color: "#e4e8ee"
+    color: "transparent"
 
     property int size: 200
 
