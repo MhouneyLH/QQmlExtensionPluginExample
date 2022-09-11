@@ -10,5 +10,9 @@ Window {
     ClockBackground
     {
         anchors.centerIn: parent
+
+        SmallClockHand
+        {
+        }
     }
 }

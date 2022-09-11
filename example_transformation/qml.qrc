@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ClockBackground.qml</file>
+        <file>SmallClockHand.qml</file>
     </qresource>
 </RCC>
