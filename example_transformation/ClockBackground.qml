@@ -5,6 +5,7 @@ Rectangle
     id: clockBackground
     width: size
     height: size
+    radius: width / 4
     color: "#e4e8ee"
 
     property int size: 200
@@ -34,6 +35,10 @@ Rectangle
             x: middleX
             y: middleY
             color: primaryColor
+
+            readonly property int middleX: (size / 2) - (delegate.width / 2)
+            readonly property int middleY: (size / 2) - (delegate.height / 2)
+
             transform:
             [
                 Translate
@@ -48,9 +53,6 @@ Rectangle
                     origin.y: delegate.height / 2
                 }
             ]
-
-            readonly property int middleX: (size / 2) - (delegate.width / 2)
-            readonly property int middleY: (size / 2) - (delegate.height / 2)
         }
     }
 }

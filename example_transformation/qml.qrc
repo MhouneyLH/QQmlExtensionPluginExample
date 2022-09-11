@@ -6,5 +6,6 @@
         <file>GenericClockHand.qml</file>
         <file>MinuteClockHand.qml</file>
         <file>SecondClockHand.qml</file>
+        <file>Clock.qml</file>
     </qresource>
 </RCC>
