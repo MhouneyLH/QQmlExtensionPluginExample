@@ -10,7 +10,17 @@ Rectangle
     property int size: 200
 
     readonly property int hourCount: 12
-    readonly property color hourDisplayLineColor: "#141414"
+    readonly property color primaryColor: "#141414"
+
+    Rectangle
+    {
+        id: middlePoint
+        width: size / 20
+        height: size / 20
+        anchors.centerIn: parent
+        radius: width
+        color: primaryColor
+    }
 
     Repeater
     {
@@ -23,7 +33,7 @@ Rectangle
             height: 15
             x: middleX
             y: middleY
-            color: hourDisplayLineColor
+            color: primaryColor
             transform:
             [
                 Translate
