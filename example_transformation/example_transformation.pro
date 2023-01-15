@@ -3,14 +3,14 @@ CONFIG += plugin
 QT += quick qml
 
 DESTDIR = ../Clock
-TARGET = $$qtLibraryTarget(clockplugin)
+TARGET = clockplugin
 
 SOURCES += \
-        src/Plugin.cpp \
+        src/ClockPlugin.cpp \
         src/main.cpp
 
 HEADERS += \
-        src/Plugin.h
+    src/ClockPlugin.h
 
 RESOURCES += qml/qml.qrc
 
@@ -38,4 +38,4 @@ resource.files += \
     $$QML_DIR/SecondClockHand.qml
 resource.path = $$DESTDIR
 COPIES += resource
-
+INSTALLS += resource
