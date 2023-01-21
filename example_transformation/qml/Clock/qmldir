@@ -1,2 +1,3 @@
-module Clock
+module ClockPlugin
+ClockPlugin 1.0 Clock.qml
 plugin clockplugin
