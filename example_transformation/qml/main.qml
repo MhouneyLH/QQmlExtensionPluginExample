@@ -8,7 +8,10 @@ Window
     width: 640
     height: 480
     visible: true
-    title: qsTr("example_transformation")
+    title: qsTr("ClockQmlPreviewForPlugin")
 
-    Clock {}
+    Clock
+    {
+        id: clock
+    }
 }
