@@ -1,10 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/qml,c++,cmake,qt,qtcreator
 # Edit at https://www.toptal.com/developers/gitignore?templates=qml,c++,cmake,qt,qtcreator
 
-# general files and directories
-build*
-Clock/
-
 ### C++ ###
 # Prerequisites
 *.d
@@ -136,5 +132,9 @@ CMakeLists.txt.user*
 *.cxxflags
 *.cflags
 
+# specific and directories
+build*
+.vscode/
+3rdParty/
 
 # End of https://www.toptal.com/developers/gitignore/api/qml,c++,cmake,qt,qtcreator
