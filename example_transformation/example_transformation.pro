@@ -15,3 +15,12 @@ HEADERS += \
     src/ClockPlugin.h
 
 RESOURCES += qml/qml.qrc
+
+# copying dependecies of the plugin in the output-folder
+PLUGIN_DEPENDENCY_DIRECTORY = $$PWD/qml/Clock
+PluginDependencies.commands = $(COPY_DIR) $$shell_path($$PLUGIN_DEPENDENCY_DIRECTORY) $$shell_path($$DESTDIR)
+
+first.depends = $(first) PluginDependencies
+export(first.depends)
+export(PluginDependencies)
+QMAKE_EXTRA_TARGETS += first PluginDependencies
