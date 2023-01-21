@@ -1,21 +1,26 @@
-QT += quick
+TEMPLATE = lib
+CONFIG += qt plugin qmltypes
+QT += qml
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QML_IMPORT_NAME = ClockPlugin
+QML_IMPORT_MAJOR_VERSION = 1
+
+DESTDIR = imports/$$QML_IMPORT_NAME
+TARGET  = clockplugin
 
 SOURCES += \
-        main.cpp
+    src/ClockPlugin.cpp
 
-RESOURCES += qml.qrc
+HEADERS += \
+    src/ClockPlugin.h
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+RESOURCES += qml/qml.qrc
 
-# Additional import path used to resolve QML modules just for Qt Quick Designer
-QML_DESIGNER_IMPORT_PATH =
+# copying dependecies of the plugin in the output-folder
+PLUGIN_DEPENDENCY_DIRECTORY = $$PWD/qml/Clock
+PluginDependencies.commands = $(COPY_DIR) $$shell_path($$PLUGIN_DEPENDENCY_DIRECTORY) $$shell_path($$DESTDIR)
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+first.depends = $(first) PluginDependencies
+export(first.depends)
+export(PluginDependencies)
+QMAKE_EXTRA_TARGETS += first PluginDependencies
