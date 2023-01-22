@@ -25,7 +25,8 @@ defaults:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: 6.2.4
-  ARTIFACT: clock_plugin.zip
+  ARTIFACT: ClockPlugin.zip
+  ARTIFACT_WITHOUT_ZIP_ENDING: ClockPlugin
 
 jobs:
   build:
@@ -68,23 +69,16 @@ jobs:
       - name: Build
         working-directory: ${{ runner.temp }}\build
         run: |
-          dir ${{ runner.temp }}
-          dir ${{ runner.temp }}\build
-          dir ${{ env.SOURCE_DIR }}
-          dir ${{ env.SOURCE_DIR }}\clock_plugin
-          dir ${{ env.SOURCE_DIR }}\testing_application
           qmake -r ${{ env.SOURCE_DIR }}\clock_plugin\clock_plugin.pro
           ${{ runner.temp }}\jom.exe -j2
-          dir ${{ runner.temp }}\build
-          dir .
-          cd release
-      # weiß noch nicht, ob ich das hier benötige für das Plugin....windeployqt --qmldir
-      - name: Create artifact (Zip the build)
-        working-directory: ${{ runner.temp }}
-        run: |
-          7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\imports\* -r
-      - name: Save artifact
+      # had to comment it out, because otherwise the actions/upload-artifact@v2 
+      # creates another .zip-file around this .zip-file
+      # - name: Create the artifact (Zip the build)
+      #   working-directory: ${{ runner.temp }}
+      #   run: |
+      #     7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\imports\ClockPlugin\*
+      - name: Save the artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT }}
-          path: ${{ runner.temp }}\${{ env.ARTIFACT }}
+          name: ${{ env.ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\build\imports\${{ env.ARTIFACT_WITHOUT_ZIP_ENDING }}
