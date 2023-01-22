@@ -121,4 +121,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING }}
-          path: ${{ runner.temp }}\${{ env.TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\buildTestingApplication\release
