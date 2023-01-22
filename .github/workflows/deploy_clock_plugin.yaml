@@ -5,12 +5,18 @@ on:
     branches:
       - 'master'
       - 'develop'
+      - 'feat/*'
+      - 'fix/*'
+      - 'chore/*'
     tags:
       - 'v*'
   pull_request:
     branches:
       - 'master'
       - 'develop'
+      - 'feat/*'
+      - 'fix/*'
+      - 'chore/*'
 
 defaults:
   run:
@@ -53,7 +59,7 @@ jobs:
         run: |
           7z x jom.zip
       - name: Create build directory
-        run: mkdir ${{ runnter. temp }}\build
+        run: mkdir ${{ runner. temp }}\build
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
         with:
