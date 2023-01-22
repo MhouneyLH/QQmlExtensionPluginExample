@@ -1,30 +1,6 @@
 name: Windows Plugin Release
 
-on:
-  push:
-    branches:
-      - 'master'
-      - 'develop'
-      - 'feat/*'
-      - 'docs/*'
-      - 'chore/*'
-      - 'fix/*'
-      - 'refactor/*'
-      - 'style/*'
-      - 'perf/*'
-    tags:
-      - 'v*'
-  pull_request:
-    branches:
-      - 'master'
-      - 'develop'
-      - 'feat/*'
-      - 'docs/*'
-      - 'chore/*'
-      - 'fix/*'
-      - 'refactor/*'
-      - 'style/*'
-      - 'perf/*'
+on: [push, pull_request]
 
 defaults:
   run:
@@ -33,8 +9,10 @@ defaults:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: 6.2.4
+  CLOCK_PLUGIN_SOURCE_DIR: ${{ github.workspace }}\clock_plugin
   CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING: ClockPlugin
   CLOCK_PLUGIN_BUILD_DIR_NAME: buildClockPlugin
+  TESTING_APPLICATION_SOURCE_DIR: ${{ github.workspace }}\testing_application
   TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING: TestingApplication
   TESTING_APPLICATION_BUILD_DIR_NAME: buildTestingApplication
 
@@ -82,7 +60,6 @@ jobs:
         uses: egor-tensin/vs-shell@v2
         with:
           arch: x64
-          vs_version: 2019
       - name: Create ClockPlugin build directory
         run: mkdir ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
       - name: Build ClockPlugin
@@ -90,7 +67,7 @@ jobs:
         # have to set the path, when the Qt-Installation is cached
         run: |
           set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
-          qmake -r ${{ env.SOURCE_DIR }}\clock_plugin\clock_plugin.pro
+          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro
           ${{ runner.temp }}\jom.exe -j2
       - name: Save the ClockPlugin artifact
         uses: actions/upload-artifact@v2
@@ -104,9 +81,9 @@ jobs:
         # have to set the path, when the Qt-Installation is cached
         run: |
           set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
-          qmake -r ${{ env.SOURCE_DIR }}\testing_application\testing_application.pro
+          qmake -r ${{ env.TESTING_APPLICATION_SOURCE_DIR }}\testing_application.pro
           ${{ runner.temp }}\jom.exe -j2
-          windeployqt --qmldir ${{ env.SOURCE_DIR }}\testing_application --release --compiler-runtime --no-translations --verbose 2 .\release
+          windeployqt --qmldir ${{ env.TESTING_APPLICATION_SOURCE_DIR }} --release --compiler-runtime --no-translations --verbose 2 .\release
       - name: Copy ClockPlugin to buildTestingApplication directory
         run : |
           xcopy /E /I /Y ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}\imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }} ${{ runner.temp }}\${{ env.TESTING_APPLICATION_BUILD_DIR_NAME }}\release\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }} 
