@@ -33,8 +33,9 @@ defaults:
 env:
   SOURCE_DIR: ${{ github.workspace }}
   QT_VERSION: 6.2.4
-  ARTIFACT: ClockPlugin.zip
-  ARTIFACT_WITHOUT_ZIP_ENDING: ClockPlugin
+  CLOCK_PLUGIN_ARTIFACT: ClockPlugin.zip
+  CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING: ClockPlugin
+  TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING: TestingApplication
 
 jobs:
   build:
@@ -49,7 +50,7 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           git fetch --all --tags -f
-      - name: Cache Qt-Installation
+      - name: Try to cache the Qt-Installation
         id: cache-qt
         uses: actions/cache@v3
         env: 
@@ -76,15 +77,15 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           7z x jom.zip
-      - name: Create build directory
-        run: mkdir ${{ runner.temp }}\build
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
         with:
           arch: x64
           vs_version: 2019
-      - name: Build
-        working-directory: ${{ runner.temp }}\build
+      - name: Create buildClockPlugin directory
+        run: mkdir ${{ runner.temp }}\buildClockPlugin
+      - name: Build ClockPlugin
+        working-directory: ${{ runner.temp }}\buildClockPlugin
         # have to set the path, when the Qt-Installation is cached
         run: |
           set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
@@ -92,12 +93,28 @@ jobs:
           ${{ runner.temp }}\jom.exe -j2
       # had to comment it out, because otherwise the actions/upload-artifact@v2 
       # creates another .zip-file around this .zip-file
-      # - name: Create the artifact (Zip the build)
+      # - name: Create the ClockPlugin artifact (Zip the build)
       #   working-directory: ${{ runner.temp }}
       #   run: |
-      #     7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\imports\ClockPlugin\*
-      - name: Save the artifact
+      #     7z a ${{ env.CLOCK_PLUGIN_ARTIFACT }} ${{ runner.temp }}\buildClockPlugin\imports\ClockPlugin\*
+      - name: Save the ClockPlugin artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ARTIFACT_WITHOUT_ZIP_ENDING }}
-          path: ${{ runner.temp }}\build\imports\${{ env.ARTIFACT_WITHOUT_ZIP_ENDING }}
+          name: ${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\buildClockPlugin\imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}
+
+      - name: Create buildTestingApplication directory
+        run: mkdir ${{ runner.temp }}\buildTestingApplication
+      - name: Build TestingApplication
+        working-directory: ${{ runner.temp }}\buildTestingApplication
+        # have to set the path, when the Qt-Installation is cached
+        run: |
+          set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
+          qmake -r ${{ env.SOURCE_DIR }}\testing_application\testing_application.pro
+          ${{ runner.temp }}\jom.exe -j2
+          windeployqt --qmldir ${{ env.SOURCE_DIR }}\test_application testing_application.exe --pdb --release --compiler-runtime
+      - name: Save the ClockPlugin artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\${{ env.TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING }}
