@@ -1,0 +1,77 @@
+name: Windows Plugin Release
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'master'
+      - 'develop'
+
+defaults:
+  run:
+    shell: cmd
+
+env:
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 6.2.4
+  ARTIFACT: clock_plugin.zip
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Get all tags for correct version determination
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: |
+          git fetch --all --tags -f
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          dir: ${{ runner.temp }}
+          setup-pyqt: false
+      - name: Download JOM
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: http://download.qt.io/official_releases/jom/jom.zip
+          target: ${{ runner.temp }}\
+      - name: Extract JOM
+        working-directory: ${{ runner.temp }}
+        run: |
+          7z x jom.zip
+      - name: Create build directory
+        run: mkdir ${{ runnter. temp }}\build
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+          vs_version: 2019
+      - name: Build
+        working-directory: ${{ runner.temp }}\build
+        run: |
+          qmake -r ${{ env.SOURCE_DIR }}\clock_plugin.pro
+          ${{ runner.temp }}\jom\jom -j2
+          cd release
+      # weiß noch nicht, ob ich das hier benötige für das Plugin....windeployqt --qmldir
+      - name: Create artifact (Zip the build)
+        working-directory: ${{ runner.temp }}
+        run: |
+          7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\* -r
+      - name: Save artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT }}
+          path: ${{ runner.temp }}\${{ env.ARTIFACT }}
