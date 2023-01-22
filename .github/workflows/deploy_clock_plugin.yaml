@@ -49,7 +49,16 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           git fetch --all --tags -f
-      - name: Install Qt
+      - name: Cache Qt-Installation
+        id: cache-qt
+        uses: actions/cache@v3
+        env: 
+          cache-name: cache-qt
+        with:
+          path: ${{ runner.temp }}\Qt
+          key: ${{ runner.os }}-Qt-${{ env.QT_VERSION }}
+      - if: ${{ steps.cache-qt.outputs.cache-hit != 'true' }}
+        name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
@@ -76,7 +85,9 @@ jobs:
           vs_version: 2019
       - name: Build
         working-directory: ${{ runner.temp }}\build
+        # have to set the path, when the Qt-Installation is cached
         run: |
+          set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
           qmake -r ${{ env.SOURCE_DIR }}\clock_plugin\clock_plugin.pro
           ${{ runner.temp }}\jom.exe -j2
       # had to comment it out, because otherwise the actions/upload-artifact@v2 
