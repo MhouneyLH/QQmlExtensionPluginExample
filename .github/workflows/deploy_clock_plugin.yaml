@@ -59,7 +59,7 @@ jobs:
         run: |
           7z x jom.zip
       - name: Create build directory
-        run: mkdir ${{ runner. temp }}\build
+        run: mkdir ${{ runner.temp }}\build
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
         with:
@@ -68,14 +68,21 @@ jobs:
       - name: Build
         working-directory: ${{ runner.temp }}\build
         run: |
-          qmake -r ${{ env.SOURCE_DIR }}\clock_plugin.pro
-          ${{ runner.temp }}\jom\jom -j2
+          dir ${{ runner.temp }}
+          dir ${{ runner.temp }}\build
+          dir ${{ env.SOURCE_DIR }}
+          dir ${{ env.SOURCE_DIR }}\clock_plugin
+          dir ${{ env.SOURCE_DIR }}\testing_application
+          qmake -r ${{ env.SOURCE_DIR }}\clock_plugin\clock_plugin.pro
+          ${{ runner.temp }}\jom.exe -j2
+          dir ${{ runner.temp }}\build
+          dir .
           cd release
       # weiß noch nicht, ob ich das hier benötige für das Plugin....windeployqt --qmldir
       - name: Create artifact (Zip the build)
         working-directory: ${{ runner.temp }}
         run: |
-          7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\* -r
+          7z a ${{ env.ARTIFACT }} ${{ runner.temp }}\build\imports\* -r
       - name: Save artifact
         uses: actions/upload-artifact@v2
         with:
