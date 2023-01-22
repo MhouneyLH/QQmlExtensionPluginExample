@@ -1,0 +1,94 @@
+name: Windows Plugin Release
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: cmd
+
+env:
+  SOURCE_DIR: ${{ github.workspace }}
+  QT_VERSION: 6.2.4
+  CLOCK_PLUGIN_SOURCE_DIR: ${{ github.workspace }}\clock_plugin
+  CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING: ClockPlugin
+  CLOCK_PLUGIN_BUILD_DIR_NAME: buildClockPlugin
+  TESTING_APPLICATION_SOURCE_DIR: ${{ github.workspace }}\testing_application
+  TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING: TestingApplication
+  TESTING_APPLICATION_BUILD_DIR_NAME: buildTestingApplication
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Get all tags for correct version determination
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: |
+          git fetch --all --tags -f
+      - name: Try to cache the Qt-Installation
+        id: cache-qt
+        uses: actions/cache@v3
+        env: 
+          cache-name: cache-qt
+        with:
+          path: ${{ runner.temp }}\Qt
+          key: ${{ runner.os }}-Qt-${{ env.QT_VERSION }}
+      - if: ${{ steps.cache-qt.outputs.cache-hit != 'true' }}
+        name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2019_64
+          dir: ${{ runner.temp }}
+          setup-pyqt: false
+      - name: Download JOM
+        uses: suisei-cn/actions-download-file@v1
+        with:
+          url: http://download.qt.io/official_releases/jom/jom.zip
+          target: ${{ runner.temp }}\
+      - name: Extract JOM
+        working-directory: ${{ runner.temp }}
+        run: |
+          7z x jom.zip
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+      - name: Create ClockPlugin build directory
+        run: mkdir ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
+      - name: Build ClockPlugin
+        working-directory: ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
+        # have to set the path, when the Qt-Installation is cached
+        run: |
+          set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
+          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro
+          ${{ runner.temp }}\jom.exe -j2
+      - name: Save the ClockPlugin artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}\imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}
+      - name: Create TestingApplication build directory
+        run: mkdir ${{ runner.temp }}\${{ env.TESTING_APPLICATION_BUILD_DIR_NAME }}
+      - name: Build TestingApplication
+        working-directory: ${{ runner.temp }}\${{ env.TESTING_APPLICATION_BUILD_DIR_NAME }}
+        # have to set the path, when the Qt-Installation is cached
+        run: |
+          set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
+          qmake -r ${{ env.TESTING_APPLICATION_SOURCE_DIR }}\testing_application.pro
+          ${{ runner.temp }}\jom.exe -j2
+          windeployqt --qmldir ${{ env.TESTING_APPLICATION_SOURCE_DIR }} --release --compiler-runtime --no-translations --verbose 2 .\release
+      - name: Copy ClockPlugin to buildTestingApplication directory
+        run : |
+          xcopy /E /I /Y ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}\imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }} ${{ runner.temp }}\${{ env.TESTING_APPLICATION_BUILD_DIR_NAME }}\release\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }} 
+      - name: Save the TestingApplication artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TESTING_APPLICATION_ARTIFACT_WITHOUT_ZIP_ENDING }}
+          path: ${{ runner.temp }}\${{ env.TESTING_APPLICATION_BUILD_DIR_NAME }}\release
