@@ -5,6 +5,7 @@
 [![Forks][forks_shield]][forks_url]
 [![Stargazers][stars_shield]][stars_url]
 [![Issues][issues_shield]][issues_url]
+[![Windows Plugin Release][actions_shield]][actions_url]
 <br>
 
 ## 📑 About the project
@@ -48,3 +49,5 @@ Contributions are always welcome! Please look at following commit-conventions, w
 [stars_url]: https://github.com/MhouneyLH/qml_cpp_examples/stargazers
 [issues_shield]: https://img.shields.io/github/issues/MhouneyLH/qml_cpp_examples.svg?style=for-the-badge
 [issues_url]: https://github.com/MhouneyLH/qml_cpp_examples/issues
+[actions_shield]: https://github.com/MhouneyLH/QQmlExtensionPluginExample/actions/workflows/deploy_clock_plugin_and_test_application.yaml/badge.svg
+[actions_url]: https://github.com/MhouneyLH/QQmlExtensionPluginExample/actions/workflows/deploy_clock_plugin_and_test_application.yaml
