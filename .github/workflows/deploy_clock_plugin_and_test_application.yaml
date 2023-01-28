@@ -64,10 +64,12 @@ jobs:
         run: mkdir ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
       - name: Build ClockPlugin
         working-directory: ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
+        env: 
+          QMAKE_OPTIONS: BUILD_PLUGIN="1"
         # have to set the path, when the Qt-Installation is cached
         run: |
           set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
-          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro
+          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro ${{ env.QMAKE_OPTIONS }}
           ${{ runner.temp }}\jom.exe -j2
       - name: Save the ClockPlugin artifact
         uses: actions/upload-artifact@v2
