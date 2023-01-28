@@ -1,5 +1,3 @@
-RESOURCES += qml/qml.qrc
-
 isEqual(BUILD_PLUGIN, "1") {
     QT += qml
     TEMPLATE = lib
@@ -10,6 +8,8 @@ isEqual(BUILD_PLUGIN, "1") {
 
     DESTDIR = imports/$$QML_IMPORT_NAME
     TARGET  = clockplugin
+
+    RESOURCES += qml/plugin_qml.qrc
 
     SOURCES += \
         src/ClockPlugin.cpp
@@ -27,6 +27,9 @@ isEqual(BUILD_PLUGIN, "1") {
     QMAKE_EXTRA_TARGETS += first PluginDependencies
 } else {
     QT += quick
+
+    RESOURCES += qml/qml.qrc
+
     SOURCES += \
         src/main.cpp
 }
