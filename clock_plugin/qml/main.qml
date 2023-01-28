@@ -13,5 +13,6 @@ Window
     Clock
     {
         id: clock
+        anchors.centerIn: parent
     }
 }

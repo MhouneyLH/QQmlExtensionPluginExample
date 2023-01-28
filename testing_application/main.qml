@@ -12,5 +12,6 @@ Window
     ClockPlugin
     {
         id: clock
+        anchors.centerIn: parent
     }
 }

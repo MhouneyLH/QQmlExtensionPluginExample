@@ -1,6 +1,6 @@
 name: Windows Plugin Release
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 defaults:
   run:
@@ -64,11 +64,20 @@ jobs:
         run: mkdir ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
       - name: Build ClockPlugin
         working-directory: ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
+        env: 
+          QMAKE_OPTIONS: BUILD_PLUGIN="1"
         # have to set the path, when the Qt-Installation is cached
         run: |
           set PATH=%PATH%;..\Qt\${{ env.QT_VERSION }}\msvc2019_64\bin
-          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro
+          qmake -r ${{ env.CLOCK_PLUGIN_SOURCE_DIR }}\clock_plugin.pro ${{ env.QMAKE_OPTIONS }}
           ${{ runner.temp }}\jom.exe -j2
+      - name: Prepare Artifact (delete unnecessary files)
+        working-directory: ${{ runner.temp }}\${{ env.CLOCK_PLUGIN_BUILD_DIR_NAME }}
+        run: |
+          del /Q /F imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}\*.pdb
+          del /Q /F imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}\*.exp
+          del /Q /F imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}\*.ilk
+          del /Q /F imports\${{ env.CLOCK_PLUGIN_ARTIFACT_WITHOUT_ZIP_ENDING }}\*.lib
       - name: Save the ClockPlugin artifact
         uses: actions/upload-artifact@v2
         with:
