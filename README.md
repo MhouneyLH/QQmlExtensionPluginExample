@@ -5,6 +5,8 @@
 [![Forks][forks_shield]][forks_url]
 [![Stargazers][stars_shield]][stars_url]
 [![Issues][issues_shield]][issues_url]
+<br>
+
 [![Windows Plugin Release][actions_shield]][actions_url]
 <br>
 
